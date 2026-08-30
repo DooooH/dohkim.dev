@@ -1,0 +1,61 @@
+/* Classes emitted by @shikijs/transformers. Kept separate from the Keel
+   design system so upstream typography changes remain easy to merge. */
+.astro-code.has-highlighted .line,
+.astro-code.has-diff .line {
+  display: inline-block;
+  width: 100%;
+  min-width: max-content;
+  padding-inline: var(--baseline);
+}
+
+.astro-code.has-highlighted .line.highlighted {
+  background: var(--color-accent-soft);
+  box-shadow: inset 0.18rem 0 var(--color-accent);
+}
+
+.astro-code.has-diff .line.diff {
+  position: relative;
+  padding-left: calc(var(--baseline) + 1.25rem);
+}
+
+.astro-code.has-diff .line.diff::before {
+  position: absolute;
+  left: var(--baseline);
+  width: 1rem;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.astro-code.has-diff .line.diff.add {
+  background: color-mix(in oklch, oklch(0.62 0.14 150), transparent 86%);
+}
+
+.astro-code.has-diff .line.diff.add::before {
+  content: '+';
+  color: oklch(0.52 0.14 150);
+}
+
+.astro-code.has-diff .line.diff.remove {
+  background: color-mix(in oklch, oklch(0.62 0.2 25), transparent 88%);
+  opacity: 0.78;
+}
+
+.astro-code.has-diff .line.diff.remove::before {
+  content: '−';
+  color: oklch(0.55 0.18 25);
+}
+
+:root[data-theme='dark'] .astro-code.has-diff .line.diff.add {
+  background-color: color-mix(in oklch, oklch(0.65 0.18 145) 24%, transparent);
+}
+
+:root[data-theme='dark'] .astro-code.has-diff .line.diff.remove {
+  background-color: color-mix(in oklch, oklch(0.6 0.22 25) 24%, transparent);
+}
+
+/* Keel normally pads the pre element. Transformer lines own that horizontal
+   padding so their background extends to both edges. */
+.astro-code.has-highlighted,
+.astro-code.has-diff {
+  padding-inline: 0;
+}

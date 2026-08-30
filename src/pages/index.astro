@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StructuredData from '../components/StructuredData.astro';
+import { getCollection, render } from 'astro:content';
+import { withBase } from '../lib/url';
+import { SITE } from '../consts';
+import { formatDate, readingTime } from '../i18n';
+
+const selectedWriting = (await getCollection('writing'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3);
+
+const readingTimes = new Map(
+  await Promise.all(
+    selectedWriting.map(async (post) => {
+      const { remarkPluginFrontmatter } = await render(post);
+      return [post.id, readingTime(remarkPluginFrontmatter.minutesRead)] as const;
+    }),
+  ),
+);
+
+const selectedWork = (await getCollection('work'))
+  .sort(
+    (a, b) =>
+      (a.data.order ?? 999) - (b.data.order ?? 999) ||
+      b.data.publishDate.getTime() - a.data.publishDate.getTime(),
+  )
+  .slice(0, 4);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.title,
+  description: SITE.description,
+  url: new URL(withBase('/'), site).href,
+};
+---
+
+<BaseLayout description={SITE.description}>
+  <StructuredData slot="head" schema={websiteSchema} />
+
+  <section class="hero section">
+    <p class="eyebrow">백엔드 엔지니어</p>
+    <h1>트래픽과 부하 속에서도 예측 가능하고 신뢰할 수 있는 백엔드를 만듭니다.</h1>
+    <p class="lead">
+      견고한 시스템 아키텍처, 안정적인 운영, 그리고 프로덕션 문제를 해결하며 내린 기술적 의사결정을
+      기록합니다.
+    </p>
+    <div class="action-row" aria-label="주요 링크">
+      <a class="button" href={withBase('/writing/')}>기술 글 읽기</a>
+      <a class="text-link" href={withBase('/work/')}>프로젝트 보기</a>
+    </div>
+  </section>
+
+  <section class="section index-feed" aria-labelledby="selected-writing">
+    <div class="section-heading">
+      <p class="eyebrow">주요 기술 글</p>
+      <h2 id="selected-writing">백엔드 시스템 구축과 운영의 기록</h2>
+      <a class="text-link" href={withBase('/writing/')}>전체 글 보기</a>
+    </div>
+    <div class="entry-list home-entry-list">
+      {
+        selectedWriting.map((post) => (
+          <article class="entry-card">
+            <div class="entry-meta">
+              <time datetime={post.data.publishDate.toISOString()}>
+                {formatDate(post.data.publishDate, 'short')}
+              </time>
+              <span>{readingTimes.get(post.id)}</span>
+              <span>{post.data.tags.join(' / ')}</span>
+            </div>
+            <h3>
+              <a href={withBase(`/writing/${post.id}/`)}>{post.data.title}</a>
+            </h3>
+            <p>{post.data.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section index-feed" aria-labelledby="selected-work">
+    <div class="section-heading">
+      <p class="eyebrow">주요 프로젝트</p>
+      <h2 id="selected-work">실제 제약 조건을 해결한 프로젝트</h2>
+      <a class="text-link" href={withBase('/work/')}>전체 프로젝트 보기</a>
+    </div>
+    <div class="work-list">
+      {
+        selectedWork.map((work) => (
+          <article class="work-card">
+            <p class="entry-meta work-tech">{work.data.tech.join(' / ')}</p>
+            <div class="work-title-group">
+              <h3>
+                <a href={withBase(`/work/${work.id}/`)}>{work.data.title}</a>
+              </h3>
+              {work.data.subtitle && (
+                <p class="work-subtitle">{work.data.subtitle}</p>
+              )}
+            </div>
+            <p class="work-desc">{work.data.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section prose-grid home-about" aria-labelledby="home-about">
+    <div>
+      <p class="eyebrow">소개</p>
+      <h2 id="home-about">맥락이 있는 엔지니어링</h2>
+    </div>
+    <div class="prose-stack">
+      <p>
+        안정적인 서비스, 데이터 중심 시스템, 그리고 소프트웨어를 지속 가능하게 만드는 운영 관점에
+        관심이 많은 백엔드 엔지니어입니다.
+      </p>
+      <a class="text-link" href={withBase('/about/')}>소개 더 보기</a>
+    </div>
+  </section>
+</BaseLayout>

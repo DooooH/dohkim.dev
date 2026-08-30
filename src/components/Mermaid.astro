@@ -1,0 +1,183 @@
+---
+interface Props {
+  chart: string;
+  label?: string;
+}
+
+const { chart, label = 'Diagram' } = Astro.props;
+---
+
+<figure class="mermaid-figure">
+  <div
+    class="mermaid-container"
+    data-mermaid-source={encodeURIComponent(chart.trim())}
+    role="img"
+    aria-label={label}
+  >
+    <div class="mermaid-loading">다이어그램을 불러오는 중...</div>
+  </div>
+  <figcaption><slot name="caption" /></figcaption>
+</figure>
+
+<script>
+  import mermaid from 'mermaid';
+
+  let drawing = false;
+  let renderCounter = 0;
+
+  const getThemeConfig = () => {
+    const isDark =
+      document.documentElement.dataset.theme === 'dark' ||
+      (!document.documentElement.dataset.theme &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    if (isDark) {
+      return {
+        theme: 'dark' as const,
+        themeVariables: {
+          darkMode: true,
+          fontFamily: 'Pretendard Variable, Pretendard, "Noto Sans KR", sans-serif',
+          background: '#22262c',
+          mainBkg: '#282d35',
+          nodeBorder: '#4e5560',
+          clusterBkg: '#22262c',
+          clusterBorder: '#373c43',
+          defaultLinkColor: '#9aa0a6',
+          titleColor: '#e6e6e6',
+          edgeLabelBackground: '#22262c',
+          nodeTextColor: '#e6e6e6',
+          primaryColor: '#282d35',
+          primaryTextColor: '#e6e6e6',
+          primaryBorderColor: '#4e5560',
+          lineColor: '#9aa0a6',
+          secondaryColor: '#1c1f24',
+          tertiaryColor: '#22262c',
+        },
+      };
+    }
+
+    return {
+      theme: 'neutral' as const,
+      themeVariables: {
+        darkMode: false,
+        fontFamily: 'Pretendard Variable, Pretendard, "Noto Sans KR", sans-serif',
+        background: '#f6f6f6',
+        mainBkg: '#ffffff',
+        nodeBorder: '#b0b0b0',
+        clusterBkg: '#f6f6f6',
+        clusterBorder: '#dbdbdb',
+        defaultLinkColor: '#555555',
+        titleColor: '#252525',
+        edgeLabelBackground: '#ffffff',
+        nodeTextColor: '#252525',
+        primaryColor: '#ffffff',
+        primaryTextColor: '#252525',
+        primaryBorderColor: '#b0b0b0',
+        lineColor: '#555555',
+        secondaryColor: '#f0f0f0',
+        tertiaryColor: '#fafafa',
+      },
+    };
+  };
+
+  const drawDiagrams = async () => {
+    if (drawing) return;
+    const containers = [...document.querySelectorAll<HTMLElement>('.mermaid-container')];
+    if (containers.length === 0) return;
+
+    drawing = true;
+    try {
+      const config = getThemeConfig();
+
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        ...config,
+      });
+
+      for (const container of containers) {
+        const source = container.dataset.mermaidSource;
+        if (!source) continue;
+
+        const code = decodeURIComponent(source);
+        const uniqueId = `mermaid-svg-${Date.now()}-${++renderCounter}`;
+
+        try {
+          const { svg } = await mermaid.render(uniqueId, code);
+          container.innerHTML = svg;
+          container.setAttribute('data-rendered', 'true');
+        } catch (err: any) {
+          console.error('Mermaid render error for diagram:', err);
+          container.innerHTML = `<div style="color: #ff5555; padding: 1rem; border: 1px dashed #ff5555; border-radius: 4px;"><strong>Mermaid Render Error:</strong> ${err?.message || String(err)}</div>`;
+        }
+      }
+    } catch (err: any) {
+      console.error('Mermaid initialize error:', err);
+      for (const container of containers) {
+        container.innerHTML = `<div style="color: #ff5555; padding: 1rem; border: 1px dashed #ff5555; border-radius: 4px;"><strong>Mermaid Init Error:</strong> ${err?.message || String(err)}</div>`;
+      }
+    } finally {
+      drawing = false;
+    }
+  };
+
+  document.addEventListener('astro:page-load', drawDiagrams);
+  document.addEventListener('astro:after-swap', drawDiagrams);
+
+  const themeObserver = new MutationObserver((mutations) => {
+    if (mutations.some((mutation) => mutation.attributeName === 'data-theme')) {
+      void drawDiagrams();
+    }
+  });
+  themeObserver.observe(document.documentElement, { attributes: true });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => void drawDiagrams());
+  } else {
+    void drawDiagrams();
+  }
+</script>
+
+<style>
+  .mermaid-figure {
+    margin-block: calc(var(--baseline) * 1.75);
+  }
+
+  .mermaid-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 8rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 1rem;
+    background: var(--color-surface);
+    border: var(--hairline);
+    border-radius: 8px;
+  }
+
+  .mermaid-container :global(svg) {
+    display: block;
+    min-width: 540px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .mermaid-loading {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  figcaption {
+    margin-top: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  figcaption:empty {
+    display: none;
+  }
+</style>
