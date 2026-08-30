@@ -7,14 +7,15 @@
 import { SITE, type NavItem } from '../consts';
 import { en, type UIKey, type UIStrings } from './en';
 import { ja } from './ja';
+import { ko } from './ko';
 
 export type { UIKey, UIStrings };
 
 /** Fallback used when `SITE.locale` has no dictionary. */
-export const DEFAULT_LOCALE = 'en';
+export const DEFAULT_LOCALE = 'ko';
 
 /** Registered dictionaries, keyed by BCP 47 language tag. */
-export const DICTIONARIES: Record<string, UIStrings> = { en, ja };
+export const DICTIONARIES: Record<string, UIStrings> = { en, ja, ko };
 
 /** The active locale, straight from `SITE.locale`. Also the value passed to
  *  `Intl`, `<html lang>`, and the RSS `<language>` element. */

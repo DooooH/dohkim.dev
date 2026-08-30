@@ -10,7 +10,7 @@ import { remarkReadingTime } from './remark-reading-time.mjs';
 export default defineConfig({
   // Vercel provides the production URL through SITE_URL. Set it to the final
   // custom domain in the project environment so canonical and feed URLs match.
-  site: process.env.SITE_URL ?? 'https://example.com',
+  site: process.env.SITE_URL ?? 'https://dohkim-dev.vercel.app',
   integrations: [mdx(), sitemap()],
   vite: {
     optimizeDeps: {

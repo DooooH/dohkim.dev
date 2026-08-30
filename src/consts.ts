@@ -5,15 +5,13 @@ import type { UIKey } from './i18n/en';
 
 export const SITE = {
   /** BCP 47 language tag. Picks the UI dictionary in `src/i18n/`, and sets
-   *  `<html lang>` and date formatting. Dictionaries ship for `en` and `ja`. */
-  locale: 'en',
+   *  `<html lang>` and date formatting. Dictionaries ship for `ko`, `en` and `ja`. */
+  locale: 'ko',
   /** Site name — used in the header brand, <title>, and og:site_name. */
   title: 'Dohyung Kim',
   /** Default meta description for pages that don't set their own. */
   description:
     'Backend engineering notes and selected work on reliable systems, data, and operations.',
-  /** Description of the RSS feed at /rss.xml. */
-  rssDescription: 'Long-form backend engineering notes from Dohyung Kim.',
   /** Default social share image, relative to the site root (see public/). */
   ogImage: '/og.jpg',
   /** Post author, emitted in JSON-LD BlogPosting structured data.
@@ -36,9 +34,7 @@ export interface SocialLink {
 
 /** Social profiles rendered as inline SVG icons in the footer.
  *  Add or remove entries here — no template edits needed. */
-export const SOCIAL_LINKS: readonly SocialLink[] = [
-  { label: 'RSS feed', href: '/rss.xml', icon: 'rss' },
-];
+export const SOCIAL_LINKS: readonly SocialLink[] = [];
 
 export type NavItem =
   | { href: string; label: string; labelKey?: never }
