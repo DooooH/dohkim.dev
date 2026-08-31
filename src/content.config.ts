@@ -17,6 +17,7 @@ const work = defineCollection({
       thumbnail: image().optional(),
       order: z.number().optional(),
       publishDate: z.coerce.date(),
+      period: z.string().optional(),
     }),
 });
 

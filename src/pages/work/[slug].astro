@@ -28,9 +28,15 @@ const { Content } = await render(entry);
       {entry.data.subtitle && <p class="article-subtitle">{entry.data.subtitle}</p>}
       <p class="lead">{entry.data.description}</p>
       <div class="entry-meta">
-        <time datetime={entry.data.publishDate.toISOString()}>
-          {formatDate(entry.data.publishDate)}
-        </time>
+        {
+          entry.data.period ? (
+            <span>{entry.data.period}</span>
+          ) : (
+            <time datetime={entry.data.publishDate.toISOString()}>
+              {formatDate(entry.data.publishDate)}
+            </time>
+          )
+        }
         <span>{entry.data.tech.join(' / ')}</span>
       </div>
       {
