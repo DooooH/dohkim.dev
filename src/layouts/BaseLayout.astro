@@ -9,6 +9,7 @@ import '@fontsource/noto-sans-kr/500.css';
 import '@fontsource/noto-sans-kr/700.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/global.css';
+import '../styles/editorial.css';
 import { ClientRouter } from 'astro:transitions';
 import { withBase } from '../lib/url';
 import { SITE, NAV_ITEMS } from '../consts';
@@ -94,6 +95,7 @@ const isActive = (href: string) => {
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
     <header class="site-header">
       <a class="brand" href={withBase('/')} aria-label={t('nav.brandHome', { site: siteName })}>
         <span>{siteName}</span>
@@ -112,7 +114,7 @@ const isActive = (href: string) => {
       </button>
     </header>
 
-    <main>
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
 

@@ -13,9 +13,14 @@
   --color-line: oklch(0.86 0.008 100);
   --color-line-strong: oklch(0.72 0.012 120);
   --color-soft: oklch(0.94 0.006 100);
-  --font-display: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-body: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --font-display:
+    'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  --font-body:
+    'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
   --content-width: 1160px;
   --prose-width: 68ch;
   --page-pad: clamp(1rem, 3vw, 2rem);
@@ -1179,7 +1184,6 @@ pre code {
     justify-content: flex-start;
     overflow-x: auto;
   }
-
 
   .split-overview,
   .prose-grid,

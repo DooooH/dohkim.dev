@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { writingByWork } from '../../lib/related-content';
 import { withBase } from '../../lib/url';
 import { formatDate, t } from '../../i18n';
 import '../../styles/code-notations.css';
@@ -12,7 +14,10 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+const relatedWriting = (await getCollection('writing', ({ data }) => !data.draft)).find(
+  (post) => post.id === writingByWork[entry.id],
+);
 ---
 
 <BaseLayout
@@ -69,13 +74,19 @@ const { Content } = await render(entry);
     </header>
 
     <div class="section article-layout">
-      <aside class="article-toc" aria-label={t('work.stackEyebrow')}>
-        <p class="eyebrow">{t('work.stackEyebrow')}</p>
-        <ul class="tech-list">
-          {entry.data.tech.map((item) => <li>{item}</li>)}
-        </ul>
-      </aside>
+      <TableOfContents headings={headings} />
       <div class="prose"><Content /></div>
     </div>
   </article>
+  {
+    relatedWriting && (
+      <aside class="section related-context" aria-label="관련 기술 글">
+        <p class="eyebrow">이 프로젝트의 기술 글</p>
+        <a href={withBase(`/writing/${relatedWriting.id}/`)}>
+          {relatedWriting.data.title} <span aria-hidden="true">→</span>
+        </a>
+        <p>{relatedWriting.data.description}</p>
+      </aside>
+    )
+  }
 </BaseLayout>

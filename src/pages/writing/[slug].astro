@@ -3,6 +3,8 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import StructuredData from '../../components/StructuredData.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { writingByWork } from '../../lib/related-content';
 import { withBase } from '../../lib/url';
 import { SITE } from '../../consts';
 import { formatDate, readingTime, t } from '../../i18n';
@@ -43,6 +45,9 @@ export async function getStaticPaths() {
 
 const { entry, newer, older, related } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(entry);
+const relatedWork = (await getCollection('work')).find(
+  (work) => writingByWork[work.id] === entry.id,
+);
 
 const site = Astro.site ?? new URL(Astro.url.origin);
 const absolute = (path: string) => new URL(withBase(path), site).href;
@@ -120,21 +125,24 @@ const schema = [
     </header>
 
     <div class="section article-layout">
-      <aside class="article-toc" aria-label={t('post.tocLabel')}>
-        <p class="eyebrow">{t('post.contentsEyebrow')}</p>
-        <nav>
-          {
-            headings
-              .filter((heading) => heading.depth === 2)
-              .map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)
-          }
-        </nav>
-      </aside>
+      <TableOfContents headings={headings} />
       <div class="prose">
         <Content />
       </div>
     </div>
   </article>
+
+  {
+    relatedWork && (
+      <aside class="section related-context" aria-label="관련 프로젝트">
+        <p class="eyebrow">관련 프로젝트</p>
+        <a href={withBase(`/work/${relatedWork.id}/`)}>
+          {relatedWork.data.title} <span aria-hidden="true">→</span>
+        </a>
+        <p>{relatedWork.data.description}</p>
+      </aside>
+    )
+  }
 
   {
     (older || newer) && (
