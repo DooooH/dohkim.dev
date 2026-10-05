@@ -11,7 +11,7 @@ export const SITE = {
   title: 'Dohyung Kim',
   /** Default meta description for pages that don't set their own. */
   description:
-    'Backend engineering notes and selected work on reliable systems, data, and operations.',
+    '권한 경계, 비동기 상태, 메트릭과 데이터 변환을 다루는 백엔드 엔지니어 김도형의 기술 기록.',
   /** Default social share image, relative to the site root (see public/). */
   ogImage: '/og.jpg',
   /** Post author, emitted in JSON-LD BlogPosting structured data.
@@ -46,7 +46,8 @@ export type NavItem =
  *  `label` instead — one of the two is required. */
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: '/', label: 'Home' },
-  { href: '/writing/', label: 'Writing' },
   { href: '/work/', label: 'Work' },
+  { href: '/writing/', label: 'Writing' },
   { href: '/about/', label: 'About' },
+  { href: '/search/', label: '검색' },
 ];

@@ -1,0 +1,33 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const sections = headings.filter((heading) => heading.depth === 2);
+---
+
+{
+  sections.length > 0 && (
+    <aside class="article-toc" aria-label="본문 목차" data-pagefind-ignore>
+      <div class="toc-desktop">
+        <p class="eyebrow">이 글의 내용</p>
+        <nav aria-label="목차">
+          {sections.map((heading) => (
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          ))}
+        </nav>
+      </div>
+      <details class="toc-mobile">
+        <summary>
+          목차 <span>{sections.length}개 항목</span>
+        </summary>
+        <nav aria-label="목차">
+          {sections.map((heading) => (
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          ))}
+        </nav>
+      </details>
+    </aside>
+  )
+}
